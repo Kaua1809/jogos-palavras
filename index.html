@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101b2b">
+  <meta name="description" content="Um desafio diário de palavras, divertido e acessível.">
+  <title>Palavrada — desafio diário de palavras</title>
+  <link rel="stylesheet" href="src/styles.css">
+  <script src="src/game.js" defer></script>
+  <script src="src/app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#game">Pular para o jogo</a>
+  <div class="app-shell">
+    <header class="site-header">
+      <a class="brand" href="./" aria-label="Palavrada, início">
+        <span class="brand-mark" aria-hidden="true">P</span>
+        <span>Palavrada</span>
+      </a>
+      <nav class="header-actions" aria-label="Ajuda e estatísticas">
+        <button class="header-button" id="help-button" type="button" aria-haspopup="dialog">Como jogar</button>
+        <button class="header-button icon-button" id="stats-button" type="button" aria-label="Abrir estatísticas" aria-haspopup="dialog">≡</button>
+      </nav>
+    </header>
+
+    <main id="game" class="layout">
+      <section class="game-column" aria-labelledby="page-title">
+        <p class="eyebrow" id="date-label">Desafio de hoje</p>
+        <h1 id="page-title">Descubra no seu ritmo.</h1>
+        <p class="intro">Uma palavra temática, seis tentativas. Use as pistas de cada letra para chegar à resposta.</p>
+
+        <div class="theme-card">
+          <div>
+            <span class="theme-label">TEMA DO DIA</span>
+            <strong id="theme-name">Memes absurdos</strong>
+          </div>
+          <span class="word-length">5 letras</span>
+        </div>
+
+        <p class="legend-intro"><strong>Como ler as pistas</strong></p>
+        <ul class="legend" aria-label="Significado das pistas">
+          <li><span class="legend-mark correct" aria-hidden="true">✓</span><span>posição certa</span></li>
+          <li><span class="legend-mark present" aria-hidden="true">◆</span><span>está na palavra, em outra posição</span></li>
+          <li><span class="legend-mark absent" aria-hidden="true">×</span><span>não está na palavra</span></li>
+        </ul>
+
+        <div id="storage-warning" class="notice" role="status" aria-live="polite" hidden></div>
+        <p class="input-help" id="input-help">Use o teclado virtual ou selecione a grade e digite no teclado físico.</p>
+        <p id="game-status" class="game-status" role="status" aria-live="polite" aria-atomic="true">Aguardando sua primeira tentativa.</p>
+
+        <div id="board" class="board" role="group" tabindex="0" aria-label="Tabuleiro de seis tentativas. Digite letras, use Backspace para apagar e Enter para enviar." aria-describedby="input-help"></div>
+        <p class="turn-count" id="turn-count">Tentativa 1 de 6</p>
+
+        <div class="keyboard" id="keyboard" aria-label="Teclado virtual">
+          <div class="keyboard-row">
+            <button class="key" type="button" data-key="Q" aria-label="Letra Q">Q</button>
+            <button class="key" type="button" data-key="W" aria-label="Letra W">W</button>
+            <button class="key" type="button" data-key="E" aria-label="Letra E">E</button>
+            <button class="key" type="button" data-key="R" aria-label="Letra R">R</button>
+            <button class="key" type="button" data-key="T" aria-label="Letra T">T</button>
+            <button class="key" type="button" data-key="Y" aria-label="Letra Y">Y</button>
+            <button class="key" type="button" data-key="U" aria-label="Letra U">U</button>
+            <button class="key" type="button" data-key="I" aria-label="Letra I">I</button>
+            <button class="key" type="button" data-key="O" aria-label="Letra O">O</button>
+            <button class="key" type="button" data-key="P" aria-label="Letra P">P</button>
+          </div>
+          <div class="keyboard-row">
+            <button class="key" type="button" data-key="A" aria-label="Letra A">A</button>
+            <button class="key" type="button" data-key="S" aria-label="Letra S">S</button>
+            <button class="key" type="button" data-key="D" aria-label="Letra D">D</button>
+            <button class="key" type="button" data-key="F" aria-label="Letra F">F</button>
+            <button class="key" type="button" data-key="G" aria-label="Letra G">G</button>
+            <button class="key" type="button" data-key="H" aria-label="Letra H">H</button>
+            <button class="key" type="button" data-key="J" aria-label="Letra J">J</button>
+            <button class="key" type="button" data-key="K" aria-label="Letra K">K</button>
+            <button class="key" type="button" data-key="L" aria-label="Letra L">L</button>
+          </div>
+          <div class="keyboard-row">
+            <button class="key key-special" type="button" data-key="BACKSPACE" aria-label="Apagar a última letra">Apagar</button>
+            <button class="key" type="button" data-key="Z" aria-label="Letra Z">Z</button>
+            <button class="key" type="button" data-key="X" aria-label="Letra X">X</button>
+            <button class="key" type="button" data-key="C" aria-label="Letra C">C</button>
+            <button class="key" type="button" data-key="V" aria-label="Letra V">V</button>
+            <button class="key" type="button" data-key="B" aria-label="Letra B">B</button>
+            <button class="key" type="button" data-key="N" aria-label="Letra N">N</button>
+            <button class="key" type="button" data-key="M" aria-label="Letra M">M</button>
+            <button class="key key-special key-submit" id="submit-key" type="button" data-key="ENTER" aria-label="Enviar tentativa">Enviar</button>
+          </div>
+        </div>
+
+        <section id="result-panel" class="result-panel" aria-labelledby="result-title" hidden>
+          <h2 id="result-title" tabindex="-1"></h2>
+          <p id="result-message"></p>
+          <button id="share-open-button" class="primary-button" type="button">Compartilhar resultado</button>
+        </section>
+      </section>
+
+      <aside class="progress-card" aria-labelledby="progress-title">
+        <span class="progress-icon" aria-hidden="true">✦</span>
+        <h2 id="progress-title">Seu progresso</h2>
+        <p>Partidas e sequência salvas neste dispositivo.</p>
+        <dl class="stats-grid">
+          <div class="stat">
+            <dt>Partidas</dt>
+            <dd id="stat-played">0</dd>
+          </div>
+          <div class="stat">
+            <dt>Vitórias</dt>
+            <dd id="stat-won">0</dd>
+          </div>
+          <div class="stat">
+            <dt>Agora</dt>
+            <dd id="stat-streak">0 dias</dd>
+          </div>
+          <div class="stat">
+            <dt>Recorde</dt>
+            <dd id="stat-best">0 dias</dd>
+          </div>
+        </dl>
+        <p class="privacy-note"><span aria-hidden="true">●</span> Sem conta ou placar global. Seu jogo fica aqui.</p>
+      </aside>
+    </main>
+
+    <footer class="site-footer">
+      <p>Um desafio por dia. Seu progresso é privado e fica neste navegador.</p>
+    </footer>
+  </div>
+
+  <dialog id="help-dialog" class="dialog" aria-labelledby="help-title">
+    <form method="dialog">
+      <button class="dialog-close" value="close" aria-label="Fechar regras">×</button>
+    </form>
+    <h2 id="help-title">Como jogar</h2>
+    <p>Adivinhe a palavra de cinco letras em até seis tentativas. Depois de cada palpite, as letras mostram o que você acertou.</p>
+    <ul class="dialog-list">
+      <li><strong>✓ Posição certa:</strong> a letra está no lugar correto.</li>
+      <li><strong>◆ Está na palavra:</strong> a letra aparece em outro lugar.</li>
+      <li><strong>× Não está:</strong> essa letra não aparece na resposta.</li>
+    </ul>
+    <p>As pistas usam texto e símbolos além das cores. Acentos são considerados equivalentes.</p>
+  </dialog>
+
+  <dialog id="stats-dialog" class="dialog" aria-labelledby="stats-title">
+    <form method="dialog">
+      <button class="dialog-close" value="close" aria-label="Fechar estatísticas">×</button>
+    </form>
+    <h2 id="stats-title">Suas estatísticas</h2>
+    <dl class="dialog-stats">
+      <div><dt>Partidas concluídas</dt><dd id="detail-played">0</dd></div>
+      <div><dt>Vitórias</dt><dd id="detail-won">0</dd></div>
+      <div><dt>Taxa de acerto</dt><dd id="detail-rate">0%</dd></div>
+      <div><dt>Sequência atual</dt><dd id="detail-streak">0 dias</dd></div>
+      <div><dt>Melhor sequência</dt><dd id="detail-best">0 dias</dd></div>
+      <div><dt>Última vitória</dt><dd id="detail-last">Nenhuma</dd></div>
+    </dl>
+    <p class="privacy-note">Estas informações só ficam salvas neste dispositivo.</p>
+  </dialog>
+
+  <dialog id="share-dialog" class="dialog" aria-labelledby="share-title">
+    <form method="dialog">
+      <button class="dialog-close" value="close" aria-label="Fechar compartilhamento">×</button>
+    </form>
+    <h2 id="share-title">Compartilhe sem spoiler</h2>
+    <p>O resultado não inclui a resposta nem as palavras que você tentou.</p>
+    <label class="share-label" for="share-text">Texto do resultado</label>
+    <textarea id="share-text" rows="8" readonly></textarea>
+    <p id="share-status" class="share-status" role="status" aria-live="polite"></p>
+    <div class="dialog-actions">
+      <button id="copy-button" class="primary-button" type="button">Copiar resultado</button>
+      <button id="native-share-button" class="secondary-button" type="button">Compartilhar</button>
+    </div>
+  </dialog>
+</body>
+</html>

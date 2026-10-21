@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f6f8f5">
+  <title>Palavrada — Protótipo de experiência</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #1d302b;
+      --muted: #61716b;
+      --paper: #f6f8f5;
+      --surface: #fff;
+      --line: #dce5df;
+      --green: #256c58;
+      --green-soft: #e2f0e9;
+      --yellow: #b77717;
+      --yellow-soft: #fff1d6;
+      --gray: #69746f;
+      --gray-soft: #e7ebe8;
+      font-family: "Segoe UI", Arial, sans-serif;
+      font-synthesis: none;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--paper); color: var(--ink); }
+    button { font: inherit; }
+    .shell { max-width: 1060px; margin: auto; padding: 22px 28px 40px; }
+    header { display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--line); padding-bottom: 16px; }
+    .brand { display: flex; align-items: center; gap: 10px; font-size: 20px; font-weight: 800; letter-spacing: -.04em; }
+    .brand-mark { display: grid; width: 34px; height: 34px; place-items: center; border-radius: 11px; background: var(--green); color: white; font-size: 17px; }
+    .nav { display: flex; gap: 8px; }
+    .icon-button { min-width: 44px; min-height: 44px; border: 1px solid var(--line); border-radius: 12px; color: var(--ink); background: var(--surface); font-size: 19px; cursor: pointer; }
+    button:focus-visible { outline: 3px solid #177a65; outline-offset: 3px; }
+    main { display: grid; grid-template-columns: minmax(0, 1fr) 280px; gap: 42px; align-items: start; padding-top: 28px; }
+    .game { max-width: 590px; width: 100%; margin: 0 auto; }
+    .eyebrow { margin: 0 0 8px; color: var(--green); font-size: 12px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+    h1 { margin: 0; font-size: clamp(28px, 5vw, 38px); letter-spacing: -.045em; }
+    .intro { margin: 8px 0 19px; max-width: 420px; color: var(--muted); line-height: 1.5; }
+    .theme { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 14px 16px; border: 1px solid #d5e5dc; border-radius: 16px; background: var(--green-soft); }
+    .theme small { display: block; margin-bottom: 3px; color: var(--green); font-weight: 700; }
+    .theme strong { font-size: 16px; }
+    .theme .badge { flex: 0 0 auto; padding: 7px 10px; border: 1px solid #bad4c7; border-radius: 99px; background: white; color: var(--green); font-size: 12px; font-weight: 700; }
+    .board-wrap { margin: 22px auto 16px; max-width: 336px; }
+    .board { display: grid; gap: 7px; }
+    .row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 7px; }
+    .tile { display: grid; grid-template-rows: 1fr auto; aspect-ratio: 1; place-items: center; border: 2px solid #ced9d2; border-radius: 10px; background: var(--surface); font-size: clamp(19px, 5vw, 25px); font-weight: 800; }
+    .tile.correct { border-color: var(--green); background: var(--green); color: #fff; }
+    .tile.present { border-color: var(--yellow); background: var(--yellow); color: #302000; }
+    .tile.absent { border-color: var(--gray); background: var(--gray); color: #fff; }
+    .tile.correct::after { content: "✓"; }
+    .tile.present::after { content: "◆"; }
+    .tile.absent::after { content: "×"; }
+    .tile.correct::after, .tile.present::after, .tile.absent::after { font-size: 11px; line-height: 1; }
+    .tile.active { border-color: #93aaa0; }
+    .tile.empty { border-color: #e3e9e5; background: #fbfcfb; }
+    .status-key { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 14px; margin-top: 12px; color: var(--muted); font-size: 12px; }
+    .status-key span { display: flex; align-items: center; gap: 6px; }
+    .dot { width: 11px; height: 11px; border-radius: 3px; }
+    .dot.correct { background: var(--green); } .dot.present { background: var(--yellow); } .dot.absent { background: var(--gray); }
+    .keyboard { display: grid; gap: 7px; max-width: 490px; margin: 16px auto 0; }
+    .key-row { display: flex; justify-content: center; gap: 5px; }
+    .key { display: grid; min-width: 30px; height: 44px; flex: 1; place-items: center; border: 0; border-radius: 8px; background: #e5ebe7; color: var(--ink); font-size: 13px; font-weight: 750; }
+    .key.wide { max-width: 72px; font-size: 11px; }
+    .key.correct { background: var(--green); color: #fff; }
+    .key.present { background: var(--yellow); color: #fff; }
+    .key.absent { background: var(--gray); color: #fff; }
+    .sidebar { padding: 20px; border: 1px solid var(--line); border-radius: 18px; background: var(--surface); }
+    .sidebar h2 { margin: 0 0 5px; font-size: 18px; letter-spacing: -.02em; }
+    .sidebar > p { margin: 0 0 18px; color: var(--muted); font-size: 13px; line-height: 1.5; }
+    .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+    .stat { padding: 12px; border-radius: 12px; background: #f4f7f4; }
+    .stat strong { display: block; font-size: 22px; }
+    .stat span { color: var(--muted); font-size: 11px; }
+    .streak { margin: 12px 0 18px; padding: 12px; border-radius: 12px; background: var(--yellow-soft); color: #61420f; font-size: 13px; }
+    .streak b { font-size: 16px; }
+    .share { width: 100%; min-height: 48px; border: 0; border-radius: 12px; background: var(--green); color: #fff; font-weight: 750; cursor: pointer; }
+    .privacy { display: flex; gap: 8px; margin: 14px 0 0; color: var(--muted); font-size: 11px; line-height: 1.45; }
+    .privacy span { color: var(--green); font-weight: 800; }
+    @media (max-width: 720px) {
+      .shell { padding: 14px 16px 28px; }
+      main { grid-template-columns: 1fr; gap: 24px; padding-top: 22px; }
+      .game { max-width: 440px; }
+      .sidebar { max-width: 440px; width: 100%; margin: auto; }
+    }
+    @media (max-width: 380px) {
+      .shell { padding-inline: 12px; }
+      .tile { border-radius: 7px; }
+      .key-row { gap: 3px; }
+      .key { min-width: 24px; height: 42px; font-size: 11px; }
+    }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; } }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header>
+      <div class="brand"><span class="brand-mark" aria-hidden="true">P</span> palavrada</div>
+      <nav class="nav" aria-label="Opções do jogo">
+        <button class="icon-button" type="button" aria-label="Como jogar">?</button>
+        <button class="icon-button" type="button" aria-label="Suas estatísticas">▤</button>
+      </nav>
+    </header>
+    <main>
+      <section class="game" aria-labelledby="game-title">
+        <p class="eyebrow">Desafio de hoje · 21 out</p>
+        <h1 id="game-title">Uma palavra, seis chances.</h1>
+        <p class="intro">Adivinhe a palavra do dia. Cada tentativa revela pistas para chegar mais perto.</p>
+        <div class="theme">
+          <div><small>TEMA DE HOJE</small><strong>Memes absurdos</strong></div>
+          <span class="badge">5 letras</span>
+        </div>
+        <div class="board-wrap" role="group" aria-label="Grade de seis tentativas por cinco letras; protótipo ilustrativo">
+          <div class="board">
+            <div class="row" role="group" aria-label="Tentativa 1"><div class="tile absent" aria-label="P, não está na palavra">P</div><div class="tile present" aria-label="O, está na palavra em outra posição">O</div><div class="tile absent" aria-label="D, não está na palavra">D</div><div class="tile present" aria-label="A, está na palavra em outra posição">A</div><div class="tile correct" aria-label="S, posição certa">S</div></div>
+            <div class="row" role="group" aria-label="Tentativa 2"><div class="tile absent" aria-label="C, não está na palavra">C</div><div class="tile correct" aria-label="A, posição certa">A</div><div class="tile absent" aria-label="N, não está na palavra">N</div><div class="tile correct" aria-label="T, posição certa">T</div><div class="tile correct" aria-label="O, posição certa">O</div></div>
+            <div class="row" role="group" aria-label="Tentativa atual"><div class="tile active" aria-label="Letra 1: R">R</div><div class="tile active" aria-label="Letra 2: A">A</div><div class="tile empty" aria-label="Letra 3, vazia"></div><div class="tile empty" aria-label="Letra 4, vazia"></div><div class="tile empty" aria-label="Letra 5, vazia"></div></div>
+            <div class="row"><div class="tile empty"></div><div class="tile empty"></div><div class="tile empty"></div><div class="tile empty"></div><div class="tile empty"></div></div>
+            <div class="row"><div class="tile empty"></div><div class="tile empty"></div><div class="tile empty"></div><div class="tile empty"></div><div class="tile empty"></div></div>
+            <div class="row"><div class="tile empty"></div><div class="tile empty"></div><div class="tile empty"></div><div class="tile empty"></div><div class="tile empty"></div></div>
+          </div>
+          <div class="status-key" aria-label="Significado das pistas">
+            <span><i class="dot correct" aria-hidden="true"></i>posição certa</span>
+            <span><i class="dot present" aria-hidden="true"></i>está na palavra</span>
+            <span><i class="dot absent" aria-hidden="true"></i>não está</span>
+          </div>
+        </div>
+        <div class="keyboard" aria-label="Teclado ilustrativo">
+          <div class="key-row"><span class="key">Q</span><span class="key">W</span><span class="key">E</span><span class="key">R</span><span class="key">T</span><span class="key">Y</span><span class="key">U</span><span class="key">I</span><span class="key">O</span><span class="key">P</span></div>
+          <div class="key-row"><span class="key">A</span><span class="key">S</span><span class="key">D</span><span class="key">F</span><span class="key">G</span><span class="key">H</span><span class="key">J</span><span class="key">K</span><span class="key">L</span></div>
+          <div class="key-row"><span class="key wide">APAGAR</span><span class="key">Z</span><span class="key">X</span><span class="key">C</span><span class="key">V</span><span class="key">B</span><span class="key">N</span><span class="key">M</span><span class="key wide">ENVIAR</span></div>
+        </div>
+      </section>
+      <aside class="sidebar" aria-labelledby="stats-title">
+        <h2 id="stats-title">Seu progresso</h2>
+        <p>Um pouquinho por dia já conta.</p>
+        <div class="stats">
+          <div class="stat"><strong>12</strong><span>partidas</span></div>
+          <div class="stat"><strong>83%</strong><span>de acertos</span></div>
+          <div class="stat"><strong>4</strong><span>sequência atual</span></div>
+          <div class="stat"><strong>7</strong><span>melhor sequência</span></div>
+        </div>
+        <div class="streak">🔥 <b>4 dias</b> jogando juntes!</div>
+        <button class="share" type="button">Compartilhar resultado</button>
+        <p class="privacy"><span aria-hidden="true">●</span> Seu progresso fica salvo só neste dispositivo.</p>
+      </aside>
+    </main>
+  </div>
+</body>
+</html>
